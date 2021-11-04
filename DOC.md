@@ -209,7 +209,7 @@ function getPurchasedPolicies(bool _isActive) public returns (
 It is supposed that before calling this function : the `msg.sender` has approved the `policyBookAddress` to spend the `totalPrice` get by the following method in PolicyBook.sol :
 
 ```js
-(uint256 totalSeconds, uint256 totalPrice) = getPolicyPrice(\_epochsNumber, \_coverTokens, msg.sender)
+(uint256 totalSeconds, uint256 totalPrice) = getPolicyPrice(_epochsNumber, _coverTokens, msg.sender)
 ```
 
 </br>
