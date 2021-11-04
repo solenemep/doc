@@ -170,11 +170,7 @@ interface IPolicyRegistry {
 ##### Then insert this code
 
 ```js
-function getPurchasedPolicies(
-  bool _isActive
-)
-  public
-  returns (
+function getPurchasedPolicies(bool _isActive) public returns (
     uint256 _policiesCount,
     address[] memory _policyBooksArr,
     PolicyInfo[] memory _policies,
@@ -210,7 +206,13 @@ function getPurchasedPolicies(
 
 ### Purchase policy
 
-It is supposed that before calling this function : the msg.sender has approved the policybook address to spend the totalPrice get by getPolicyPrice.</br>
+It is supposed that before calling this function : the `msg.sender` has approved the `policyBookAddress` to spend the `totalPrice` get by the following method in PolicyBook.sol :
+
+```js
+(uint256 totalSeconds, uint256 totalPrice) = getPolicyPrice(\_epochsNumber, \_coverTokens, msg.sender)
+```
+
+</br>
 Also, the distributor must be whitelisted by BridgeMutual admin to get a fee.
 
 ##### First import interfaces
@@ -274,7 +276,11 @@ None
 
 ### Earn interest
 
-It is supposed that before calling this function : the msg.sender has approved the policybook address to spend the liquidityAmount converted in stblAmount.
+It is supposed that before calling this function : the `msg.sender` has approved the `policyBookAddress` to spend the `_liquidityAmount` converted in `stblAmount`
+
+```js
+uint256 stblAmount = _liquidityAmount * 10**12;
+```
 
 ##### First import interfaces
 
