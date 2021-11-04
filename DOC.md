@@ -149,12 +149,7 @@ interface IPolicyRegistry {
     uint256 endTime;
   }
   function getPoliciesLength(address _userAddr) external view returns (uint256);
-  function getPoliciesInfo(
-    address _userAddr,
-    bool _isActive,
-    uint256 _offset,
-    uint256 _limit
-  )
+  function getPoliciesInfo(address _userAddr, bool _isActive, uint256 _offset, uint256 _limit)
     external
     view
     returns (
