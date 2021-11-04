@@ -70,7 +70,11 @@ interface IPolicyBookRegistry {
 ##### Then insert this code
 
 ```js
-    function getWhiteListedPolicies() public returns (address[] memory _policyBooksArr, PolicyBookStats[] memory _stats) {
+        function getWhiteListedPolicies()
+        public
+        view
+        returns (address[] memory _policyBooksArr, IPolicyBookRegistry.PolicyBookStats[] memory _stats)
+    {
         // SET UP
         address contractRegistryAddress = "0x8050c5a46FC224E3BCfa5D7B7cBacB1e4010118d";
         IContractRegistry contractRegistry = IContractsRegistry(contractRegistryAddress);
@@ -78,17 +82,17 @@ interface IPolicyBookRegistry {
 
         // FUNCTION CALL
         uint256 countWhiteListed = policyBookRegistry.countWhitelisted();
-        return policyBookRegistry.listWithStatsWhitelisted(0, countWhitelisted);
+        return policyBookRegistry.listWithStatsWhitelisted(0, countWhiteListed);
     }
 
 ```
 
 **Returns**
 
-| Name             | Type              | Description                                          |
-| ---------------- | ----------------- | ---------------------------------------------------- |
-| \_policyBooksArr | address[]         | List of whitelisted policies                         |
-| \_stats          | PolicyBookStats[] | The array of policies stats (struct PolicyBookStats) |
+| Name             | Type                                  | Description                                          |
+| ---------------- | ------------------------------------- | ---------------------------------------------------- |
+| \_policyBooksArr | address[]                             | List of whitelisted policies                         |
+| \_stats          | IPolicyBookRegistry.PolicyBookStats[] | The array of policies stats (struct PolicyBookStats) |
 
 **Arguments**
 
@@ -165,33 +169,38 @@ interface IPolicyRegistry {
 ##### Then insert this code
 
 ```js
-function getPurchasedPolicies(bool _isActive) public returns (
-    uint256 _policiesCount,
-    address[] memory _policyBooksArr,
-    PolicyInfo[] memory _policies,
-    IClaimingRegistry.ClaimStatus[] memory _policyStatuses
-  )
-{
-  // SET UP
-  address contractRegistryAddress = "0x8050c5a46FC224E3BCfa5D7B7cBacB1e4010118d";
-  IContractRegistry contractRegistry = IContractsRegistry(contractRegistryAddress);
-  IPolicyRegistry policyRegistry = IPolicyRegistry(contractRegistry.getPolicyRegistryContract());
+        function getPurchasedPolicies(bool _isActive)
+        public
+        view
+        returns (
+            uint256 _policiesCount,
+            address[] memory _policyBooksArr,
+            IPolicyRegistry.PolicyInfo[] memory _policies,
+            IClaimingRegistry.ClaimStatus[] memory _policyStatuses
+        )
+    {
+        // SET UP
+        address contractRegistryAddress = "0x8050c5a46FC224E3BCfa5D7B7cBacB1e4010118d";
+        IContractRegistry contractRegistry = IContractsRegistry(contractRegistryAddress);
+        IPolicyRegistry policyRegistry = IPolicyRegistry(
+            contractRegistry.getPolicyRegistryContract()
+        );
 
-  // FUNCTION CALL
-  uint256 count = policyRegistry.getPoliciesLength();
-  return policyRegistry.getPoliciesInfo(msg.sender, _isActive, 0, count);
-}
+        // FUNCTION CALL
+        uint256 count = policyRegistry.getPoliciesLength(msg.sender);
+        return policyRegistry.getPoliciesInfo(msg.sender, _isActive, 0, count);
+    }
 
 ```
 
 **Returns**
 
-| Name             | Type                            | Description                                    |
-| ---------------- | ------------------------------- | ---------------------------------------------- |
-| \_policiesCount  | uint256                         | The number of police in the array              |
-| \_policyBooksArr | address[]                       | The array of policy books addresses            |
-| \_policies       | PolicyInfo[]                    | The array of policies info (struct PolicyInfo) |
-| \_policyStatuses | IClaimingRegistry.ClaimStatus[] | The array of status of claim                   |
+| Name             | Type                            | Description                                     |
+| ---------------- | ------------------------------- | ----------------------------------------------- |
+| \_policiesCount  | uint256                         | The number of police in the array               |
+| \_policyBooksArr | address[]                       | The array of policy books addresses             |
+| \_policies       | IPolicyRegistry.PolicyInfo[]    | The array of policies info (struct PolicyInfo)  |
+| \_policyStatuses | IClaimingRegistry.ClaimStatus[] | The array of status of claim (enum ClaimStatus) |
 
 **Arguments**
 
@@ -249,8 +258,7 @@ interface IPolicyBook {
         uint256 _coverTokens
     ) public {
         // SET UP
-        address policyBookFacadeAddress = IPolicyBook(policyBookAddress).policyBookFacade();
-        IPolicyBookFacade policyBookFacade = IPolicyBookFacade(policyBookFacadeAddress);
+        IPolicyBookFacade policyBookFacade = IPolicyBook(policyBookAddress).policyBookFacade();
 
         // FUNCTION CALL
         policyBookFacade.buyPolicyFromDistributorFor(msg.sender, _epochsNumber, _coverTokens, address(this));
@@ -312,8 +320,7 @@ interface IPolicyBook {
 ```js
     function earnInterest(address policyBookAddress, uint256 _liquidityAmount) public {
         // SET UP
-        address policyBookFacadeAddress = IPolicyBook(policyBookAddress).policyBookFacade();
-        IPolicyBookFacade policyBookFacade = IPolicyBookFacade(policyBookFacadeAddress);
+        IPolicyBookFacade policyBookFacade = IPolicyBook(policyBookAddress).policyBookFacade();
 
         // FUNCTION CALL
         policyBookFacade.addLiquidityFor(msg.sender, _liquidityAmount);
