@@ -17,16 +17,52 @@ interface IContractsRegistry {
 
 ```
 
-- IPolicyBookRegistry.sol
+- IPolicyBookFabric.sol
 
 ```js
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.4;
+
+interface IPolicyBookFabric {
+    enum ContractType {
+        CONTRACT,
+        STABLECOIN,
+        SERVICE,
+        EXCHANGE,
+        VARIOUS
+    }
+}
+
+```
+
+- IPolicyBookRegistry.sol
+
+```js
+pragma solidity ^0.7.4;
 pragma experimental ABIEncoderV2;
 
+import "./IPolicyBookFabric.sol";
+
 interface IPolicyBookRegistry {
-  function count() external view returns (uint256);
-  function listWhitelisted(uint256 offset, uint256 limit) external view returns (address[] memory _policyBooksArr);
+    struct PolicyBookStats {
+        string symbol;
+        address insuredContract;
+        IPolicyBookFabric.ContractType contractType;
+        uint256 maxCapacity;
+        uint256 totalSTBLLiquidity;
+        uint256 stakedSTBL;
+        uint256 APY;
+        uint256 annualInsuranceCost;
+        uint256 bmiXRatio;
+        bool whitelisted;
+    }
+
+    function countWhitelisted() external view returns (uint256);
+
+    function listWithStatsWhitelisted(uint256 offset, uint256 limit)
+        external
+        view
+        returns (address[] memory _policyBooksArr, PolicyBookStats[] memory _stats);
 }
 
 ```
@@ -34,24 +70,25 @@ interface IPolicyBookRegistry {
 ##### Then insert this code
 
 ```js
-function getWhiteListedPolicies() public returns (address[] memory _policyBooksArr) {
-  // SET UP
-  address contractRegistryAddress = "0x8050c5a46FC224E3BCfa5D7B7cBacB1e4010118d";
-  IContractRegistry contractRegistry = IContractsRegistry(contractRegistryAddress);
-  IPolicyBookRegistry policyBookRegistry = IPolicyBookRegistry(contractRegistry.getPolicyBookRegistryContract());
+    function getWhiteListedPolicies() public returns (address[] memory _policyBooksArr, PolicyBookStats[] memory _stats) {
+        // SET UP
+        address contractRegistryAddress = "0x8050c5a46FC224E3BCfa5D7B7cBacB1e4010118d";
+        IContractRegistry contractRegistry = IContractsRegistry(contractRegistryAddress);
+        IPolicyBookRegistry policyBookRegistry = IPolicyBookRegistry(contractRegistry.getPolicyBookRegistryContract());
 
-  // FUNCTION CALL
-  uint256 countWhiteListed = policyBookRegistry.countWhitelisted();
-  return policyBookRegistry.listWhitelisted(0, countWhiteListed);
-}
+        // FUNCTION CALL
+        uint256 countWhiteListed = policyBookRegistry.countWhitelisted();
+        return policyBookRegistry.listWithStatsWhitelisted(0, countWhitelisted);
+    }
 
 ```
 
 **Returns**
 
-| Name             | Type      | Description                  |
-| ---------------- | --------- | ---------------------------- |
-| \_policyBooksArr | address[] | List of whitelisted policies |
+| Name             | Type              | Description                                          |
+| ---------------- | ----------------- | ---------------------------------------------------- |
+| \_policyBooksArr | address[]         | List of whitelisted policies                         |
+| \_stats          | PolicyBookStats[] | The array of policies stats (struct PolicyBookStats) |
 
 **Arguments**
 
